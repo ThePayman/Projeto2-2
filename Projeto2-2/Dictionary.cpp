@@ -24,7 +24,7 @@ bool Dictionary::read_dictionary() {
 				else if(temporary_word != "") temporary_word += line_char;
 			} else {
 				if (line_char == ',') {
-					dictionary_mmap.insert(pair<string, string>(word_key, temporary_word));
+					dictionary_mmap.insert(pair<string, string>(toupper(word_key), toupper(temporary_word)));
 					temporary_word = "";
 				} else if (line_char != ' ') temporary_word += line_char;
 			}
