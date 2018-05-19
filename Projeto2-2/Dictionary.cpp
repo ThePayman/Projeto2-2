@@ -12,7 +12,7 @@ Dictionary::Dictionary() {
 }
 
 
-
+/*
 bool Dictionary::read_dictionary() {
 	dictionary_mmap = {};
 	for (string line; getline(dictionary_file, line); ) {
@@ -31,5 +31,5 @@ bool Dictionary::read_dictionary() {
 		}
 		if(temporary_word != "") dictionary_mmap.insert(pair<string, string>(toupper(word_key), toupper(temporary_word)));
 	}
-}	
+}	*/
 
