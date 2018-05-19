@@ -37,6 +37,7 @@ bool Puzzle::recreate_verify_2d_vector() {
 			else if (new_puzzle_word.direction == 'V') y_index++;
 		}
 	}
+	return true;
 }
 
 Puzzle Puzzle::load(istream file, string dictionary_file_name, multimap<string, string> dictionary_mmap) {
