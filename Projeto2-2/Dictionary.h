@@ -13,16 +13,17 @@ using namespace std;
 class Dictionary {
 
 public:
-	ifstream dictionary_file;
-	Dictionary();
+	ifstream* dictionary_file;
+
+	Dictionary(ifstream* dictionary_file, string dictionary_file_name);
 
 	bool read_dictionary();
 
-private:
 	string dictionary_file_name;
+	multimap<string, string> dictionary_mmap = {};
+
 	vector<string> usable_words;
 	ofstream word_file;
-	multimap<string, string> dictionary_mmap = {};
-	//ifstream dictionary_file;
+
 
 };
