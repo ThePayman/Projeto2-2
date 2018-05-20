@@ -1,11 +1,10 @@
-#pragma once
 #include "string"
-#include "fstream"
+#include "iostream"
 #include "vector"
-#include "Dictionary.h"
-#include "Board.h"
+#include "map"
 
 using namespace std;
+
 
 struct puzzle_word {
 	char positionX;
@@ -16,31 +15,16 @@ struct puzzle_word {
 
 class Puzzle {
 public:
-	Puzzle(unsigned int size_x, unsigned int size_y, string name, Dictionary* dictionary_object);
-	Puzzle(unsigned int size_x, unsigned int size_y, string name, vector<puzzle_word> load_vector, Dictionary* dictionary_object);
+	Puzzle(int size_x, int size_y, string name, vector<puzzle_word> load_vector, vector<string> solved_puzzle_corresponding_word_vector);
 	bool insert(puzzle_word word);
-	bool insert_string(string puzzle_word_pos, string puzzle_word_string);
-	bool remove(puzzle_word word);
-	bool remove_string(string puzzle_word_pos, string puzzle_word_string);
 	bool recreate_verify_2d_vector();
-	bool check_word(puzzle_word word);
-	vector<string> possible_words(string puzzle_word_pos);
-	void fill();
-	bool save(ofstream* output_file, Board* board);
-	static std::pair<Board*, Puzzle*> load(ifstream* inputput_file, Dictionary* dictionary_object);
-
-	static void trow_error(string error);
-	static void trow_error(int error);
-
-	vector<vector<char>> two_d_puzzle_vector;
-
-	ifstream file;
-
+	static Puzzle load(istream inputput_file, string dictionary_file_name, multimap<string, string> dictionary_mmap);
 private:
-	unsigned int size_x;
-	unsigned int size_y;
+	int size_x;
+	int size_y;
 	string name;
+	vector<vector<char>> two_d_puzzle_vector;
+	vector<puzzle_word> solved_puzzle_word_vector;
+	vector<string> solved_puzzle_corresponding_word_vector;
 	vector<puzzle_word> puzzle_word_vector;
-	Dictionary* dictionary;
 };
-

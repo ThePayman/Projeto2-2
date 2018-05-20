@@ -13,12 +13,11 @@ using namespace std;
 class Board
 {
 public:
-	Board(int x_size, int y_size);
+	Board();
 
 	void create_board();
 
 	void show_board();
-	void write_to_file(ofstream* output_file);
 
 	bool update_board(vector<vector<char>>);
 
@@ -27,7 +26,7 @@ public:
 	unsigned int line_size, column_size;
 
 private:
-	
+
 	vector<vector<char>> board;
 };
 
