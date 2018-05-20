@@ -4,25 +4,28 @@
 #include "fstream"
 #include "string"
 #include "vector"
-#include "map"
 
 using namespace std;
 
 
 
-class Dictionary {
+class Dictionary{
 
 public:
-	ifstream dictionary_file;
-	Dictionary();
+	ifstream* dictionary_file;
 
-	bool read_dictionary();
+	//Default constructor
+	Dictionary(ifstream* dictionary_file, string dictionary_file_name);
 
-private:
-	string dictionary_file_name;
+	//Destructor
+	~Dictionary();
+
+	//Acessor functions
+	vector<string> read_dictionary();
+	vector<string> usable_words_sort();
+
 	vector<string> usable_words;
-	ofstream word_file;
-	multimap<string, string> dictionary_mmap = {};
-	//ifstream dictionary_file;
+	string dictionary_file_name;
 
 };
+
