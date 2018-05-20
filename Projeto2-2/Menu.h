@@ -7,6 +7,7 @@
 #include "Dictionary.h"
 #include "Puzzle.h"
 #include "Board.h"
+#include "Player.h"
 
 using namespace std;
 
@@ -20,16 +21,17 @@ public:
 	bool ask_puzzle_file();
 	bool ask_username();
 	void menu_rules();
-	bool check_username();
-	void welcome_username();
 	
 	void ask_position_and_word();
+
+	bool give_score();
 
 	ifstream* get_input_file();
 
 	Puzzle* puzzle;
 	Board* board;
 	Dictionary* dictionary;
+	Player* player;
 
 	static void trow_error(string error);
 	static void trow_error(int error);
@@ -42,9 +44,5 @@ private:
 	string dicitionary_file_name;
 	ifstream* dictionary_file;
 	string puzzle_file_name;
-	string username;
-	vector<string> usernames;
-	vector<int> usernames_scores = { 15 , 20 };
-	int a = usernames.size(); //devia ser local
 };
 

@@ -14,7 +14,6 @@ Puzzle::Puzzle(int set_size_x, int set_size_y, string set_name, vector<puzzle_wo
 		two_d_puzzle_vector.push_back(y_vector);
 	}
 	for (int i = 0; i < load_vector.size(); i++) {
-		cout << load_vector[i].word_string;
 		puzzle_word word = load_vector[i];
 		this->insert(word,true);
 	}
@@ -27,11 +26,17 @@ Puzzle::Puzzle(int set_size_x, int set_size_y, string set_name, vector<puzzle_wo
 		}
 	}
 	two_d_puzzle_vector = two_d_puzzle_vector_blacks;
-	solved_puzzle_word_vector = load_vector;
+	solved_puzzle_word_vector.clear();
+	for (int i = 0; i < load_vector.size(); i++) {
+		puzzle_word word = load_vector[i];
+		if (word.word_string != "#") {
+			solved_puzzle_word_vector.push_back(load_vector[i]);
+		}
+	}
 	solved_puzzle_corresponding_word_vector = puzzle_corresponding_word_vector;
 
 	for (int i = 0; i < solved_puzzle_word_vector.size(); i++) {
-		pair<puzzle_word, string> clue_pair(solved_puzzle_word_vector[i], solved_puzzle_corresponding_word_vector[i]);
+		pair<puzzle_word, string> clue_pair(solved_puzzle_word_vector[i], solved_puzzle_corresponding_word_vector[i]); //erro
 		if (solved_puzzle_word_vector[i].direction == 'H') horizontal_clues.push_back(clue_pair);
 		else vertical_clues.push_back(clue_pair);
 	}
@@ -43,6 +48,9 @@ Inserts a new word
 bool Puzzle::insert(puzzle_word word, bool put_blacks) {
 	int x_index = word.positionX - 'a';
 	int y_index = word.positionY - 'A';
+	if (!fits_solved(word) && !put_blacks) {
+		return false;
+	}
 	if (!check_word(word)) {
 		return false;
 	}
@@ -150,20 +158,53 @@ bool Puzzle::check_word(puzzle_word word) {
 	return false;
 }
 
+bool Puzzle::fits_solved(puzzle_word word) {
+	for (const puzzle_word solved_word : solved_puzzle_word_vector) {
+		if (word.positionX == solved_word.positionX && word.positionY == solved_word.positionY && word.direction == solved_word.direction) {
+			if (solved_word.word_string.size() == word.word_string.size()) return true;
+		}
+		if (word.word_string == solved_word.word_string) return false;
+	}
+	return false;
+}
+
 void Puzzle::show_clues() {
 	cout << "Horizontal Words: " << endl;
 	for (const pair<puzzle_word,string> clue : horizontal_clues) {
-		cout << clue.first.positionX << clue.first.positionY << clue.first.direction << " - " << clue.second;
+		cout << clue.first.positionX << clue.first.positionY << clue.first.direction << " - " << clue.second << endl;
 	}
 	cout << endl << endl;
 	cout << "Vertical Words: " << endl;
 	for (const pair<puzzle_word, string> clue : vertical_clues) {
-		cout << clue.first.positionX << clue.first.positionY << clue.first.direction << " - " << clue.second;
+		cout << clue.first.positionX << clue.first.positionY << clue.first.direction << " - " << clue.second << endl;
 	}
 }
 
+bool Puzzle::check_if_complete() {
+	if (puzzle_word_vector.size() == solved_puzzle_word_vector.size()) return true;
+}
+
+int Puzzle::puzzle_correctly_filled() {
+	int amount_correct = 0;
+	bool all_correct = true;
+	for (const puzzle_word solved_puzzle_word : solved_puzzle_word_vector) {
+		bool found_in_solved = false;
+		for (const puzzle_word try_puzzle_word : puzzle_word_vector) {
+			if (try_puzzle_word.positionX == solved_puzzle_word.positionX && try_puzzle_word.positionY == solved_puzzle_word.positionY && try_puzzle_word.direction == solved_puzzle_word.direction && try_puzzle_word.word_string == solved_puzzle_word.word_string) {
+				found_in_solved = true;
+			}
+		}
+		if (found_in_solved) {
+			amount_correct++;
+		}
+		else {
+			all_correct = false;
+		}
+	}
+	return amount_correct;
+}
+
 pair<Board*, Puzzle*> Puzzle::load(ifstream* file, Dictionary* dictionary_object) {
-	//string dictionary_file_name, multimap<string, string> dictionary_mmap
 	string word;
 	int i = 0;
 	int size_x = 0;
@@ -208,6 +249,9 @@ pair<Board*, Puzzle*> Puzzle::load(ifstream* file, Dictionary* dictionary_object
 						int random_index = rand() % synonym.size();
 
 						solved_puzzle_corresponding_word_vector.push_back(synonym[random_index]);
+						loaded_puzzle_words.push_back(new_puzzle_word);
+					}
+					if (new_puzzle_word.word_string == "#") {
 						loaded_puzzle_words.push_back(new_puzzle_word);
 					}
 				}

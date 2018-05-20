@@ -3,6 +3,8 @@
 #include "Board.h"
 #include "Dictionary.h"
 #include "Puzzle.h"
+#include "Player.h"
+#include <time.h>
 
 
 Menu::Menu(){
@@ -14,7 +16,6 @@ Menu::Menu(){
 	cout << endl;
 	cout << endl;
 	this->ask_username();
-	this->welcome_username();
 	this->ask_dictionary();
 	this->ask_puzzle_file();
 	pair<Board*, Puzzle*> board_puzzle_loaded_pair = Puzzle::load(puzzle_file, dictionary);
@@ -23,6 +24,7 @@ Menu::Menu(){
 	this->menu_rules();
 	board->update_board(puzzle->two_d_puzzle_vector);
 	board->show_board();
+	player->start_time = time(NULL);
 	this->ask_position_and_word();
 }
 
@@ -52,51 +54,16 @@ bool Menu::ask_puzzle_file() {
 		return this->get_input_file();
 	}
 	puzzle_file = file;
+	puzzle_file_name = file_name.substr(file_name.size()-7,3);
 	return true;
 }
 
 bool Menu::ask_username() {
 	cout << "What is your username?" << endl;
+	string username;
 	cin >> username;
-	//TODO:
-	//criar um vetor de usernames com o numero de puzzles já completos (pode ficar isto o nosso score)
-	/*if (username not in usernames){
-		usernames.push_back(username)
-	}*/
+	player = new Player(username);
 	return true;
-}
-
-bool Menu::check_username() {
-	for (unsigned int i = 0; i < usernames.size(); i++) {
-		if (username != usernames[i]) {
-			a--;
-		}
-	}
-	if (a == 0) {
-		usernames.push_back(username);
-		usernames_scores.push_back(0);
-		return false;
-	}
-	return true;
-}
-
-void Menu::welcome_username() {
-	if (!this->check_username()) {
-		cout << "Welcome back, " << username << "!" << endl;
-		cout << endl;
-		for (unsigned int i = 0; i < usernames.size(); i++) {
-			if (username == usernames[i]) {
-				cout << "Your score is: " << usernames_scores[i] << "." << endl;
-				cout << endl;
-			}
-		}
-	}
-	if (this->check_username()) {
-		cout << "Welcome, " << username << "!" << endl;
-		cout << endl;
-		cout << "Your score is: " << 0 << "." << endl;
-		cout << endl;
-	}
 }
 
 
@@ -137,19 +104,49 @@ void Menu::ask_position_and_word() {
 		}
 		if (word[0] == '-') puzzle->remove_string(position, word.substr(1, word.size() - 1));
 		else if (word[0] == '?') {
-			/*
-			vector<string> possible_words = puzzle->possible_words(position);
-			cout << "Possible words for position " << position << ": " << endl;
-			for (const string word : possible_words) {
-				cout << word << endl;
-			}*/
+			vector<string> synonym;
+			for (auto itr = dictionary->dictionary_mmap.begin(); itr != dictionary->dictionary_mmap.end(); itr++) {
+				word = word.substr(1, word.size() - 1);
+				if (itr->first == word) {
+					synonym.push_back(itr->second);
+				}
+			}
+			if (synonym.size() > 0) {
+				int random_index = rand() % synonym.size();
+				cout << "Help: " << synonym[random_index] << endl;
+			}
 		}
 		else puzzle->insert_string(position, word);
 		board->update_board(puzzle->two_d_puzzle_vector);
 		board->show_board();
+		if (puzzle->check_if_complete()) {
+			player->end_time = time(NULL);
+			this->give_score();
+			return;
+		}
 	}
 	cin.clear();
-	//this->ask_puzzle_options();
+	player->end_time = time(NULL);
+	this->give_score();
+}
+
+bool Menu::give_score() {
+	player->points = puzzle->puzzle_correctly_filled();
+	string file_location;
+	cout << "Where do you want to find the score file?" << endl;
+	cin >> file_location;
+	if (file_location.back() != '/') file_location += '/';
+	string puzzle_output_file_name = puzzle_file_name;
+	fstream f;
+	f.open(file_location + "b" + puzzle_output_file_name + "_p.txt", ios::out | ios::app);
+	if (!f.peek() == fstream::traits_type::eof()) {
+		cout << "Previous players" << endl;
+		for (string line; getline(f, line); ) {
+			cout << line << endl;
+		}
+	}
+	f << player->name << " " << player->points << player->seconds_taken();
+	return true;
 }
 
 ifstream* Menu::get_input_file() {

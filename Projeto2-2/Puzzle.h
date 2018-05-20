@@ -28,6 +28,9 @@ public:
 	bool recreate_verify_2d_vector();
 
 	bool check_word(puzzle_word word);
+	bool fits_solved(puzzle_word word);
+	int puzzle_correctly_filled();
+	bool check_if_complete();
 
 	void show_clues();
 
