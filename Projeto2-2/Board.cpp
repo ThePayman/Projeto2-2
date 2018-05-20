@@ -52,9 +52,21 @@ void setcolor(unsigned int color) { HANDLE hcon = GetStdHandle(STD_OUTPUT_HANDLE
 void setcolor(unsigned int color, unsigned int background_color) { HANDLE hCon = GetStdHandle(STD_OUTPUT_HANDLE); if (background_color == BLACK) SetConsoleTextAttribute(hCon, color); else SetConsoleTextAttribute(hCon, color | BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED); }
 
 
-Board::Board(int x_size, int y_size){
-	column_size = x_size;
-	line_size = y_size;
+Board::Board() {
+}
+
+void Board::create_board() {
+
+	/*cout <<
+		"What is the board size (lines and columns separated by a space)?" << endl;
+	cin >> line_size >> column_size;
+
+	while (line_size <= 0 || column_size <= 0) {
+		cout << "Invalid board size, please input new values that are greater than 0." << endl;
+		cin.clear();
+		cin >> line_size >> column_size;
+	}   PORQUE NAO PRECISAMOS DE PERGUNTAR O TAMANHO DA BOARD*/
+
 	for (int x = 0; x < column_size + 1; x++) {
 		vector<char> y_vector;
 		for (int y = 0; y < line_size + 1; y++) {
@@ -73,17 +85,13 @@ Board::Board(int x_size, int y_size){
 	board[0][0] = ' ';
 }
 
-void Board::create_board() {
-	Menu::trow_error("Deprecated. This function should not be called");
-}
-
 void Board::show_board() {
 
-	for (unsigned int x = 0; x < board.size(); x++){
-		for (unsigned int y = 0; y < board[0].size(); y++){
+	for (unsigned int x = 0; x < board.size(); x++) {
+		for (unsigned int y = 0; y < board[0].size(); y++) {
 			if (x == 0) { setcolor(4); }
 			if (y == 0) { setcolor(4); }
-			if (x != 0 && y != 0) { setcolor(0,7); }
+			if (x != 0 && y != 0) { setcolor(0, 7); }
 			if (y == (board[0].size() - 1)) { cout << " " << board[x][y] << " "; }
 			else { cout << " " << board[x][y]; }
 		}
@@ -92,31 +100,18 @@ void Board::show_board() {
 	}
 }
 
-void Board::write_to_file(ofstream* output_file) {
-	ofstream& file = *output_file;
-	for (unsigned int x = 0; x < board.size(); x++) {
-		for (unsigned int y = 0; y < board[0].size(); y++) {
-			if (x != 0 && y != 0) { setcolor(0, 7); }
-			if (y == (board[0].size() - 1)) { file << " " << board[x][y] << " "; }
-			else { file << " " << board[x][y]; }
-		}
-		file << endl;
-	}
-}
-
-bool Board::update_board(vector<vector<char>> two_d_vector){
-	for (unsigned int x = 0; x < two_d_vector.size(); x++){
+bool Board::update_board(vector<vector<char>> two_d_vector) {
+	for (unsigned int i = 0; i < two_d_vector.size(); i++) {
 		for (unsigned int y = 0; y < two_d_vector[0].size(); y++) {
-			board[1 + y][1 + x] = two_d_vector[x][y];
-			}
+			board[1 + i][1 + y] = two_d_vector[i][y];
+		}
 	}
 	return true;
 }
 
-Board::~Board(){
+Board::~Board() {
 	//save the board and exit
 }
-
 
 
 
